@@ -1,0 +1,342 @@
+@import url("https://fonts.googleapis.com/css2?family=Allura&family=Ephesis&family=Forum&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Charm&display=swap");
+
+:root {
+  --primary-color: #0c1213;
+  --secondary-color: #151d1e;
+  --box_shadow: #1b4c3926;
+  --card_bcg_1: #133a2b;
+  --card_bcg_2: #102b21;
+  --input_bcg: #0b2219;
+  --text_color: #ece5db;
+  --button_color: #1b4c39;
+  --data_color: #938e88;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 99vh;
+  background: linear-gradient(
+    106deg,
+    var(--primary-color) 0%,
+    var(--secondary-color) 100%
+  );
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 50px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.quote {
+  height: auto;
+  border-radius: 12.5px;
+  background: linear-gradient(
+    108deg,
+    var(--card_bcg_1) 0%,
+    var(--card_bcg_2) 100%
+  );
+  box-shadow: 27px 19px 29.9px 0px var(--box_shadow);
+  display: flex;
+  padding: 30px;
+  position: relative;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.right {
+  height: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+}
+
+.forms {
+  border-radius: 12.5px;
+  background: linear-gradient(
+    108deg,
+    var(--card_bcg_1) 0%,
+    var(--card_bcg_2) 100%
+  );
+  width: 450px;
+  height: 100%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#search {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.search {
+  width: 700px;
+  display: inline-flex;
+  padding: 21px 0px 21px 0px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12.5px;
+  background: linear-gradient(
+    108deg,
+    var(--card_bcg_1) 0%,
+    var(--card_bcg_2) 100%
+  );
+}
+
+.search_button {
+  width: 50%;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: var(--text_color);
+  font-family: "Allura", cursive;
+  font-size: 42px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+label {
+  color: var(--text_color);
+  font-family: "Allura", cursive;
+  font-size: 27px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+textarea {
+  border-radius: 10px;
+  border: none;
+  background: var(--input_bcg);
+  resize: none;
+  width: 350px;
+  height: 140px;
+  flex-shrink: 0;
+  color: var(--text_color);
+  font-family: "Charm", cursive;
+  font-size: 24px;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+input {
+  border-radius: 10px;
+  border: none;
+  background: var(--input_bcg);
+  width: 350px;
+  height: 50px;
+  flex-shrink: 0;
+  color: var(--text_color);
+  font-family: "Charm", cursive;
+  font-size: 24px;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+#cytatForm {
+  display: flex;
+  align-items: left;
+  justify-content: left;
+  flex-direction: column;
+}
+
+button {
+  border-radius: 20px;
+  border: none;
+  background: var(--button_color);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  color: var(--text_color);
+  font-family: "Allura", cursive;
+  font-size: 42px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-top: 50px;
+}
+
+.autor {
+  color: var(--text_color);
+  font-family: Allura;
+  font-size: 38px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.tresc {
+  color: var(--text_color);
+  font-family: "Charm", cursive;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.data {
+  color: var(--data_color);
+  font-family: Forum;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.quote-text {
+  width: 500px;
+  position: relative;
+  height: auto;
+  margin-top: 50px;
+  margin-left: 100px;
+  margin-bottom: 35px;
+}
+
+#cytatyList {
+  display: flex;
+  gap: 30px;
+  flex-direction: column;
+}
+
+.back_button {
+  position: fixed;
+  bottom: 70px;
+  right: 50px;
+  width: 20px;
+  height: auto;
+  z-index: 1;
+}
+
+#back_button {
+  width: 50px;
+  height: auto;
+  position: absolute;
+}
+
+textarea:focus,
+input:focus {
+  outline: none;
+}
+
+.delete img,
+.edit img {
+  width: 20px;
+  height: auto;
+}
+
+.delete {
+  position: absolute;
+  right: 20px;
+  top: 35px;
+}
+.edit {
+  position: absolute;
+  right: 50px;
+  top: 35px;
+}
+
+.motywy img {
+  width: 50px;
+  height: auto;
+}
+
+.motywy {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+@media all and (max-width: 450px) {
+  .container {
+    flex-direction: column-reverse;
+  }
+
+  .right {
+    width: 400px;
+    height: 700px;
+    position: unset;
+    right: 5vw;
+    top: 30px;
+  }
+
+  .quote {
+    width: 400px;
+  }
+
+  .quote-text {
+    margin-left: 50px;
+  }
+
+  .forms {
+    width: auto;
+  }
+
+  .back_button {
+    position: fixed;
+    right: 0vw;
+    bottom: 5vh;
+  }
+
+  textarea,
+  input {
+    width: 300px;
+  }
+
+  textarea:focus,
+  input:focus {
+    width: 300px;
+    outline: none;
+  }
+
+  .autor {
+    font-size: 24px;
+  }
+
+  .tresc {
+    font-size: 28px;
+  }
+
+  .search {
+    width: 400px;
+  }
+
+  #search {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .search_button {
+    width: 80%;
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+}

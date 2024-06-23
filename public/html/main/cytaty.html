@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../../css/cytat.css" />
+    <title>Cytaty</title>
+</head>
+
+<body>
+    <div class="back_button">
+        <img id="back_button" src="../../images/button_cyt.svg" onclick="location.href='/'" />
+    </div>
+    <div class="container">
+        <div class="left">
+            <div class="search">
+                <div id="search">
+                    <h2>Szukaj po autorze</h2>
+                    <form id="searchForm">
+                        <input type="text" id="searchh" list="autorzy2" placeholder="AUTOR">
+                        <datalist id="autorzy2">
+                        </datalist>
+                </div>
+                <br>
+                <button class="search_button" type="button" onclick="szukajCytaty()">
+                    Szukaj
+                </button>
+
+                </form>
+            </div>
+            <div id="cytatyList"></div>
+        </div>
+
+        <div class="right">
+            <div class="motywy">
+                <img src="../../images/zielen.svg" class="motyw" onclick="zmienMotyw('ziel')">
+                <img src="../../images/bordowy.svg" class="motyw" onclick="zmienMotyw('bord')">
+                <img src="../../images/truskawka.svg" class="motyw" onclick="zmienMotyw('trus')">
+            </div>
+            <div class="forms">
+                <h2>Dodaj cytat</h2>
+                <form id="cytatForm">
+                    <label for="tresc">Treść cytatu</label>
+                    <textarea type="text" id="tresc" required></textarea>
+                    <br>
+                    <label for="autor">Autor</label>
+                    <input type="text" id="autor" required list="autorzy">
+                    <datalist id="autorzy">
+                    </datalist>
+                    <br>
+                    <label for="date">Data</label>
+                    <input type="date" id="date">
+                    <br>
+                    <button type="button" onclick="dodajCytat()">Wstaw</button>
+                </form>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+    <script>
+        let button = document.getElementById("back_button");
+
+        button.src = `../../images/button_cyt${localStorage.getItem('images')}.svg`;
+
+
+        async function getID() {
+            try {
+                const response = await fetch('/api/getID', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const data = await response.json();
+                let id = data.id;
+                return id;
+            } catch (error) {
+                console.error('Błąd pobierania ID:', error);
+                throw error;
+            }
+        }
+
+        async function dodajCytat() {
+
+            let user_id = await getID();
+
+
+
+
+            var trescInput = document.getElementById('tresc');
+            var autorInput = document.getElementById('autor');
+            var dateInput = document.getElementById('date');
+
+            var tresc = trescInput.value.trim();
+            var autor = autorInput.value.trim();
+            var date = dateInput.value.trim();
+
+            if (!tresc) {
+                alert('Wprowadź treść cytatu.');
+                return;
+            } else if (!autor) {
+                alert('Wprowadź autora cytatu.');
+                return;
+            } else if (!date) {
+                alert('Wprowadź datę cytatu.');
+                return;
+            }
+
+            function formatTimeUnit(unit) {
+                return unit < 10 ? `0${unit}` : unit;
+            }
+
+            const now = new Date();
+            const hour = formatTimeUnit(now.getHours());
+            const minute = formatTimeUnit(now.getMinutes());
+            const second = formatTimeUnit(now.getSeconds());
+
+            // Add the current time to the date entered by the user
+            date += ' ' + hour + ':' + minute + ':' + second;
+
+            fetch('/api/dodaj_cytat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tresc: tresc,
+                        autor: autor,
+                        date: date,
+                        id_autora: user_id
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Pobierz i zaktualizuj listę cytatów
+                        pobierzCytaty();
+
+                        // Wyczyść inputy po dodaniu cytatu
+                        trescInput.value = '';
+                        autorInput.value = '';
+                        dateInput.value = '';
+                    } else {
+                        alert('Błąd podczas dodawania cytatu');
+                    }
+                });
+        }
+
+        async function szukajCytaty() {
+
+            let user_id = await getID();
+
+
+            var searchInput = document.getElementById('searchh');
+            var autor = searchInput.value.trim();
+
+            var url = '/api/cytaty';
+            if (autor) {
+                url += '?autor=' + autor;
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Sort cytaty array by date in reverse order
+                    data.cytaty.sort((a, b) => new Date(b.data) - new Date(a.data));
+                    // Zaktualizuj listę cytatów na stronie
+                    var cytatyList = document.getElementById('cytatyList');
+                    cytatyList.innerHTML = '';
+
+                    data.cytaty.forEach(cytat => {
+                        var div = document.createElement('div');
+                        div.classList.add('quote');
+                        // Sformatuj datę przed wyświetleniem
+                        var formattedDate = new Date(cytat.data).toLocaleString('pl-PL', {
+                            day: 'numeric',
+                            month: 'numeric',
+                            year: 'numeric',
+                        });
+                        div.innerHTML = '<span class="autor">' + cytat.autor + '</span>' +
+                            '<div class="quote-text"><img id="cytat_quote" src="../images/cytat' +
+                                localStorage.getItem('images') + '.svg"/><span class="tresc">' +
+                            cytat.tresc + '</span></div>' +
+                            '<span class="data">~' + formattedDate + '</span>';
+
+                        if (user_id == cytat.id_autora) {
+                            div.innerHTML += '<span class="delete" onclick="usunCytat(' + cytat.id +
+                                ')"><img src="../images/icons/li_trash' +
+                                localStorage.getItem('images') +
+                                '.svg"/></span><span class="edit" onclick="edytujCytat(`' +
+                                cytat.tresc + '`,' + cytat.id +
+                                ')"><img src="../images/icons/li_pencil' +
+                                localStorage.getItem('images') + '.svg"/></span>'
+                        }
+
+                        cytatyList.appendChild(div);
+                    });
+
+                    searchInput.value = '';
+                });
+        }
+
+
+        async function pobierzCytaty() {
+
+            let user_id = await getID();
+
+
+            fetch('/api/cytaty')
+                .then(response => response.json())
+                .then(data => {
+                    // Sort cytaty array by date in reverse order
+                    data.cytaty.sort((a, b) => new Date(b.data) - new Date(a.data));
+                    // Zaktualizuj listę cytatów na stronie
+                    var cytatyList = document.getElementById('cytatyList');
+                    cytatyList.innerHTML = '';
+
+                    data.cytaty.forEach(cytat => {
+
+                        var div = document.createElement('div');
+                        div.classList.add('quote');
+                        // Sformatuj datę przed wyświetleniem
+                        var formattedDate = new Date(cytat.data).toLocaleString('pl-PL', {
+                            day: 'numeric',
+                            month: 'numeric',
+                            year: 'numeric',
+                        });
+                        div.innerHTML = '<span class="autor">' + cytat.autor + '</span>' +
+                            '<div class="quote-text"><img id="cytat_quote" src="../images/cytat' +
+                                localStorage.getItem('images') + '.svg"/><span class="tresc">' +
+                            cytat.tresc + '</span></div>' +
+                            '<span class="data">~' + formattedDate + '</span>';
+
+                        if (user_id == cytat.id_autora) {
+                            div.innerHTML += '<span class="delete" onclick="usunCytat(' + cytat.id +
+                                ')"><img src="../images/icons/li_trash' +
+                                localStorage.getItem('images') +
+                                '.svg"/></span><span class="edit" onclick="edytujCytat(`' +
+                                cytat.tresc + '`,' + cytat.id +
+                                ')"><img src="../images/icons/li_pencil' +
+                                localStorage.getItem('images') + '.svg"/></span>'
+                        }
+
+                        cytatyList.appendChild(div);
+                    });
+                });
+        }
+
+
+        function getAutors() {
+            fetch('/api/cytaty/getAutors')
+                .then(response => response.json())
+                .then(data => {
+                    var datalist = document.getElementById('autorzy');
+                    var datalist2 = document.getElementById('autorzy2');
+                    datalist.innerHTML = '';
+                    datalist2.innerHTML = '';
+
+                    data.autory.forEach(autor => {
+
+                        var option = document.createElement('option');
+                        option.value = autor.autor;
+                        datalist.appendChild(option);
+
+                    })
+
+                    data.autory.forEach(autor => {
+
+                        var option = document.createElement('option');
+                        option.value = autor.autor;
+                        datalist2.appendChild(option);
+
+                    })
+                })
+        }
+
+
+        function usunCytat(id) {
+
+            const response = confirm("Are you sure you want to do that?");
+
+            if (response) {
+                fetch('/api/cytaty/' + id, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }).then(response => {
+                    if (response.ok) {
+                        pobierzCytaty();
+                        getAutors();
+                    }
+                })
+            }
+        }
+
+        function edytujCytat(tresc, id) {
+            const response = prompt("Podaj tekst, który chcesz edytować", tresc);
+
+            if (response) {
+                fetch('/api/cytaty/' + id, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            tresc: response
+                        }),
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            pobierzCytaty();
+                            getAutors();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Błąd podczas zapytania PUT:', error);
+                    });
+            }
+        }
+
+
+        function zmienMotyw(kolor) {
+
+            switch (kolor) {
+                case 'ziel':
+                    document.documentElement.style.setProperty('--primary-color', '#010d09');
+                    document.documentElement.style.setProperty('--secondary-color', '#010f09');
+                    document.documentElement.style.setProperty('--box_shadow', '#1B4C3926');
+                    document.documentElement.style.setProperty('--card_bcg_1', '#133A2B');
+                    document.documentElement.style.setProperty('--card_bcg_2', '#102B21');
+                    document.documentElement.style.setProperty('--input_bcg', '#0B2219');
+                    document.documentElement.style.setProperty('--text_color', '#ECE5DB');
+                    document.documentElement.style.setProperty('--button_color', '#1B4C39');
+                    document.documentElement.style.setProperty('--data_color', '#938E88');
+                    document.getElementById("back_button").src = "../../images/button_cyt.svg";
+                    localStorage.setItem('kolor', 'ziel');
+                    localStorage.setItem('images', '');
+                    pobierzCytaty();
+                    break;
+                case 'bord':
+                    document.documentElement.style.setProperty('--primary-color', '#130C0E');
+                    document.documentElement.style.setProperty('--secondary-color', '#1E1518');
+                    document.documentElement.style.setProperty('--box_shadow', '#4C1B2A26');
+                    document.documentElement.style.setProperty('--card_bcg_1', '#3A1321');
+                    document.documentElement.style.setProperty('--card_bcg_2', '#2B101A');
+                    document.documentElement.style.setProperty('--input_bcg', '#220B10');
+                    document.documentElement.style.setProperty('--text_color', '#ECE5DB');
+                    document.documentElement.style.setProperty('--button_color', '#4C1B27');
+                    document.documentElement.style.setProperty('--data_color', '#938E88');
+                    document.getElementById("back_button").src = "../../images/button_cyt2.svg";
+                    localStorage.setItem('kolor', 'bord');
+                    localStorage.setItem('images', '2');
+                    pobierzCytaty();
+                    break;
+                case 'trus':
+                    document.documentElement.style.setProperty('--primary-color', '#FFD9D9');
+                    document.documentElement.style.setProperty('--secondary-color', '#FFB4B4');
+                    document.documentElement.style.setProperty('--box_shadow', '#4C1B3515');
+                    document.documentElement.style.setProperty('--card_bcg_1', '#F9C8C8');
+                    document.documentElement.style.setProperty('--card_bcg_2', '#FF9595');
+                    document.documentElement.style.setProperty('--input_bcg', '#DA8282');
+                    document.documentElement.style.setProperty('--text_color', '#180202');
+                    document.documentElement.style.setProperty('--button_color', '#FFCDCD');
+                    document.documentElement.style.setProperty('--data_color', '#150101');
+                    document.getElementById("back_button").src = "../../images/button_cyt3.svg";
+                    localStorage.setItem('kolor', 'trus');
+                    localStorage.setItem('images', '3');
+                    pobierzCytaty();
+                    break;
+
+                    
+
+            }
+        }
+
+
+
+        let kolorek = localStorage.getItem('kolor');
+
+
+        // Pobierz i zaktualizuj listę cytatów przy ładowaniu strony
+        document.addEventListener('DOMContentLoaded', async function () {
+            await pobierzCytaty();
+            await zmienMotyw(kolorek);
+            await getAutors();
+            getID();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../../css/form.css" />
+    <title>Zarejestruj się</title>
+  </head>
+
+  <body>
+    <form>
+      <label for="username">Nazwa użytkowika</label>
+      <input type="text" id="user" name="username" /><br />
+      <label for="password">Hasło</label>
+      <input type="password" id="pass" name="password" /><br />
+    </form>
+    <button class="button-7" onclick="register()">Zarejestruj się</button>
+
+    <script>
+      function register() {
+        let username = document.getElementById("user").value.toLowerCase();
+        let password = document.getElementById("pass").value;
+
+        if (username == "") {
+          alert("Please enter username");
+          return;
+        } else if (password == "") {
+          alert("Please enter password");
+          return;
+        }
+
+        fetch("/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+          }),
+        }).then((res) => {
+          if (res.status == 200) {
+            window.location.href = "/login";
+          } else if (res.status == 400) {
+            alert("Username already exists");
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
