@@ -81,11 +81,14 @@ Aplikacja implementuje własne REST API do obsługi operacji CRUD na cytatach:
 
 ## Problemy i ich przykładowe rozwiązania
 
-Problem: Brak zabezpieczenia przed atakami SQL injection.
-Rozwiązanie: Użycie parametryzowanych zapytań w sqlite3.
+**Problem**: Brak zabezpieczenia przed atakami SQL injection.
 
-Problem: Przechowywanie haseł w formie plaintext.
-Rozwiązanie: Implementacja haszowania haseł.
+**Rozwiązanie**: Użycie parametryzowanych zapytań w sqlite3.
+<br /><br /><br />
+**Problem**: Przechowywanie haseł w formie plaintext.
 
-Problem: Brak walidacji danych wejściowych po stronie serwera.
-Rozwiązanie: Dodanie middleware do walidacji danych przed przetworzeniem żądań.
+**Rozwiązanie**: Implementacja haszowania haseł.
+<br /><br /><br />
+**Problem**: Brak walidacji danych wejściowych po stronie serwera.
+
+**Rozwiązanie**: Dodanie middleware do walidacji danych przed przetworzeniem żądań.
